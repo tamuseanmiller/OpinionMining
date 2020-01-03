@@ -9,6 +9,7 @@ import os
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
+import search
 
 scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
@@ -69,15 +70,11 @@ def parse(score=0):
 
 
 # Method that calls Youtube API v3 to return at most 100 comments for a particular channel
-def getComments(api_service_name, api_version, client_secrets_file, developer_key, channel_id, page_token=None):
-
+def get_comments(youtube, client_secrets_file, channel_id, page_token=None):
     # Get credentials and create an API client
     # flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
     #     client_secrets_file, scopes)
     # credentials = flow.run_console()
-
-    youtube = googleapiclient.discovery.build(
-        api_service_name, api_version, developerKey=developer_key)
 
     # Checks to see if a nextPageToken value was passed
     if page_token is not None:
@@ -101,24 +98,14 @@ def getComments(api_service_name, api_version, client_secrets_file, developer_ke
     return response
 
 
-def main():
-    # Disable OAuthlib's HTTPS verification when running locally.
-    # *DO NOT* leave this option enabled in production.
-    # os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+def info(youtube, client_secrets_file, channel_id):
+    response = get_comments(youtube, client_secrets_file, channel_id)
 
-    api_service_name = "youtube"
-    api_version = "v3"
-    client_secrets_file = "client_secret_765965354761-eu1neqo2lommuqc2tqh8fi1vtvkfr66i.apps.googleusercontent.com.json"
-    developer_key = 'AIzaSyC2BquPeqcoHl8RQs_m7wUVnJfO84fKCRw'
-    channel_id = input("Channel ID --> ")
-
-    response = getComments(api_service_name, api_version, client_secrets_file, developer_key, channel_id)
-
-    # Opens file to write all comments
+    # Opens file to write all comments7
     file = open('info.txt', 'w', encoding='utf-8')
 
     # The sample size for loop
-    for resp in range(1):
+    for respond in range(2):
 
         # for loop to iterate through every comments information
         for block in response['items']:
@@ -129,11 +116,30 @@ def main():
             block = block.replace('\n', '')
             file.write(block + '\n')
 
-            # Reads the comments again to get over the max limit of 100
-            response = getComments(api_service_name, api_version, developer_key, client_secrets_file, channel_id,
-                                   response['nextPageToken'])
+        # Reads the comments again to get over the max limit of 100
+        response = get_comments(youtube, client_secrets_file, channel_id,
+                                response['nextPageToken'])
 
-    file.close()
+        # file.close()
+
+
+def main():
+    # Disable OAuthlib's HTTPS verification when running locally.
+    # *DO NOT* leave this option enabled in production.
+    # os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+    api_service_name = "youtube"
+    api_version = "v3"
+    client_secrets_file = "CLIENT_SECRETS_FILE"
+    developer_key = 'DEVELOPER_KEY'
+    channel_id = input("YouTube Channel ID --> ")
+
+    youtube = googleapiclient.discovery.build(
+        api_service_name, api_version, developerKey=developer_key)
+
+    info(youtube, client_secrets_file, channel_id)
+    search.work()
+
     create()
     score = parse()
 
