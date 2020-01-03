@@ -14,5 +14,4 @@ for the positive and negative words
 
 and
 
-https://github.com/feconroses/gather-tweets-from-stream
-@feconroses for the twitter script
+https://github.com/feconroses/gather-tweets-from-stream for the twitter script
